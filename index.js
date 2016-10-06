@@ -15,10 +15,9 @@ const GoogleAuth = require('./lib/GoogleAuth')
 
 const createSheet = require('./lib/createSheet')
 const sheetHandle = require('./lib/sheetHandle')
+const {base64_decode} = require('./lib/base64')
 
 const config = require('./config')
-
-
 
 const sheets = google.sheets('v4');
 
@@ -63,39 +62,42 @@ function processRequest(options, req, res, jsonData) {
 
   const reqObj = JSON.parse(jsonData);
 
-  const prs = reqObj.files.map((file) => {
+  const promises = reqObj.files.map((file) => {
     console.log(file.mimeType)
     console.log(file.name)
-    base64_decode(file.body, "/tmp/" + file.name)
+    const { mimeType, name} = file
+    const fileName ="/tmp/" + name
+    
+    base64_decode(file.body, fileName)
 
-    return fileSave(options, )
+    return fileSave(options, {mimeType, name, fileName })
   })
 
-  res.writeHead(200);
-  res.end(JSON.stringify(resObj));
+  Promise.all(promises)
+  .then((files)=>{
+    console.log('end')
+    res.writeHead(200)
+    res.end(JSON.stringify({success:true}))
+
+  })
+
 }
 
-function base64_decode(base64str, file) {
-  // create buffer object from base64 encoded string, it is important to tell the constructor that the string is base64 encoded
-  const bitmap = new Buffer(base64str, 'base64');
-  // write buffer to file
-  fs.writeFileSync(file, bitmap);
-}
 
 
-const fileSave = async (options, result) => {
-
+const fileSave = (options, params) => {
+  const {mimeType, name, fileName} = params
   const drive = google.drive('v3');
   const fileMetadata = {
-    name: 'bird.png',
-    mimeType: 'image/png',
+    name,
+    mimeType,
   };
   const media = {
-    name: 'bird.png',
-    mimeType: 'image/png',
-    body: fs.createReadStream('/Users/gangseong-il/Downloads/bird.png'),
+    name,
+    mimeType,
+    body: fs.createReadStream(fileName),
   };
-  return [options, new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     drive.files.create({
       auth: options.auth,
       resource: fileMetadata,
@@ -111,7 +113,7 @@ const fileSave = async (options, result) => {
         resolve(file)
       }
     })
-  })]
+  })
 
 }
 

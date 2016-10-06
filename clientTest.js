@@ -1,24 +1,25 @@
-var http = require('http');
-var fs = require('fs')
+const http = require('http');
+
+const {base64_encode} = require('./lib/base64')
+
 var options = {
   host: '127.0.0.1',
   path: '/',
   port: '8080',
   method: 'POST'
-};
+}
+
 function readJSONResponse(response) {
-  var responseData = '';
+  let responseData = '';
   response.on('data', function (chunk) {
     responseData += chunk;
   });
   response.on('end', function () {
-    var dataObj = JSON.parse(responseData);
+    // const dataObj = JSON.parse(responseData);
     console.log("Raw Response: " +responseData);
-    console.log("Message: " + dataObj.message);
-    console.log("Question: " + dataObj.question);
   });
 }
-var req = http.request(options, readJSONResponse);
+const req = http.request(options, readJSONResponse);
 let json = {
   title: '화면오류 발생',
   screenId: 'sc0001',
@@ -38,15 +39,6 @@ let json = {
     body: base64_encode('/Users/gangseong-il/Downloads/bird.png'),
   }]
 }
-function base64_encode(file) {
-    // read binary data
-    var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    let str =  new Buffer(bitmap).toString('base64');
-    console.log('strlen', str.length/1024)
-    return str
-}
-req.write(JSON.stringify(json));
 
-fs.readFile
+req.write(JSON.stringify(json));
 req.end();

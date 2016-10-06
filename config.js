@@ -118,7 +118,7 @@ const SCOPES = [
     'https://www.googleapis.com/auth/drive',
 ];
 
-const CONF_BASE = __dirname + '/.credentials'
+const CONF_BASE = __dirname + '/.conf'
 const OAUTH_OTKEN_PATH = CONF_BASE + '/sheets.googleapis.com-nodejs-quickstart.json'
 const CLIENT_SECRET = CONF_BASE + '/client_secret.json'
 const SHEET_FILEINFO = CONF_BASE + '/sheetFileInfo.json'

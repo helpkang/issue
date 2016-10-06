@@ -1,0 +1,18 @@
+{
+  "name": "issue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^13.0.0",
+    "moment": "^2.15.1"
+  }
+}

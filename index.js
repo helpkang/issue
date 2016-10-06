@@ -15,7 +15,7 @@ const GoogleAuth = require('./lib/GoogleAuth')
 
 const createSheet = require('./lib/createSheet')
 const sheetHandle = require('./lib/sheetHandle')
-const {base64_decode} = require('./lib/base64')
+const {base64_decode, base64_decode_stream} = require('./lib/base64')
 
 const config = require('./config')
 
@@ -66,27 +66,29 @@ function processRequest(options, req, res, jsonData) {
     console.log(file.mimeType)
     console.log(file.name)
     const { mimeType, name} = file
-    const fileName ="/tmp/" + name
-    
-    base64_decode(file.body, fileName)
 
-    return fileSave(options, {mimeType, name, fileName })
+    const fileReadStream = base64_decode_stream(file.body)
+
+    return fileSave(options, { mimeType, name, fileReadStream })
   })
 
   Promise.all(promises)
-  .then((files)=>{
-    console.log('end')
-    res.writeHead(200)
-    res.end(JSON.stringify({success:true}))
+    .then((files) => {
+      return appendSheet(options, reqObj, files)
+    })
+    .then(() => {
+      console.log('end')
+      res.writeHead(200)
+      res.end(JSON.stringify({ success: true }))
 
-  })
+    })
 
 }
 
 
 
 const fileSave = (options, params) => {
-  const {mimeType, name, fileName} = params
+  const {mimeType, name, fileReadStream} = params
   const drive = google.drive('v3');
   const fileMetadata = {
     name,
@@ -95,7 +97,8 @@ const fileSave = (options, params) => {
   const media = {
     name,
     mimeType,
-    body: fs.createReadStream(fileName),
+    // body: fs.createReadStream(fileName),
+    body: fileReadStream,
   };
   return new Promise((resolve, reject) => {
     drive.files.create({
@@ -118,32 +121,54 @@ const fileSave = (options, params) => {
 }
 
 
-const appendSheet = (options, file) => {
+const appendSheet = (options, reqObj, files) => {
   moment.locale('ko');
 
-  return [
+  const {
+    title,
+    screenId,
+    screenName,
+    name,
+    tel,
+    deviceOS,
+    deviceVersion,
+    deviceName,
+    deviceInfo,
+  } = reqObj
+
+  const fileIds = files.map((file, idx)=>{
+    return `=HYPERLINK("https://drive.google.com/file/d/${file.id}", "imageLink ${++idx}")`
+  })
+
+  let fileFirstValue = (fileIds.length>0) ? fileIds[0]: ''
+   
+   let fileSubValue = []
+   if(fileFirstValue){
+     fileSubValue = fileIds.slice(1)
+   }  
+
+  sheetHandle.appendData(
     options,
-    sheetHandle.appendData(
-      options,
-      [
-        {
-          "values": [
-            '오류 발생입니다.',
-            'co00102',
-            '포인트해지',
-            '아무개',
-            '01082999206',
-            moment().format('LLL'),
-            'https://drive.google.com/file/d/' + file.id,
-            'android',
-            '4.1',
-            'sh4-1233',
-            '{json:"하하하"}',
-            '등록',
-            '미지정',
-          ]
-        }
-      ]
-    )
-  ]
+    [
+      {
+        "values": [
+          title,
+          screenId,
+          screenName,
+          name,
+          tel,
+          moment().format('LLL'),
+          fileFirstValue,
+          deviceOS,
+          deviceVersion,
+          deviceName,
+          JSON.stringify(deviceInfo),
+          '등록',
+          '미지정',
+          ...fileSubValue,
+        ]
+      }
+    ]
+  )
+
 }

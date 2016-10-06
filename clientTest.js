@@ -33,11 +33,18 @@ let json = {
   deviceInfo: {name:'', version:'',},
 
 
-  files: [{
+  files: [
+    {
     mimeType: 'image/png',
     name: 'bird.png',
     body: base64_encode('/Users/gangseong-il/Downloads/bird.png'),
-  }]
+  },
+    {
+      mimeType: 'image/jpeg',
+      name: 'album-kimgunmo-17.jpg',
+      body: base64_encode('/Users/gangseong-il/Downloads/album-kimgunmo-17.jpg'),
+    },
+  ]
 }
 
 req.write(JSON.stringify(json));

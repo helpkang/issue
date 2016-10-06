@@ -61,14 +61,14 @@ function httpDemon(options) {
 
 function processRequest(options, req, res, jsonData) {
 
-  let reqObj = JSON.parse(jsonData);
+  const reqObj = JSON.parse(jsonData);
 
-  reqObj.files.map((file) => {
+  const prs = reqObj.files.map((file) => {
     console.log(file.mimeType)
     console.log(file.name)
     base64_decode(file.body, "/tmp/" + file.name)
 
-    await fileSave(options, )
+    return fileSave(options, )
   })
 
   res.writeHead(200);

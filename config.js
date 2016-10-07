@@ -8,6 +8,12 @@ const values = [
     {
         "userEnteredValue":
         {
+            "stringValue": "내용"
+        },
+    },
+    {
+        "userEnteredValue":
+        {
             "stringValue": "화면아이디"
         },
     },

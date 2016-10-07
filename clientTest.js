@@ -22,6 +22,7 @@ function readJSONResponse(response) {
 const req = http.request(options, readJSONResponse);
 let json = {
   title: '화면오류 발생',
+  contents: '화면오류 발생\n어려운 문제는 없음\n시간이 걸릴뿐',
   screenId: 'sc0001',
   screenName: '로그인 화면',
   name: '아무개',
@@ -39,11 +40,11 @@ let json = {
     name: 'bird.png',
     body: base64_encode('/Users/gangseong-il/Downloads/bird.png'),
   },
-    {
-      mimeType: 'image/jpeg',
-      name: 'album-kimgunmo-17.jpg',
-      body: base64_encode('/Users/gangseong-il/Downloads/album-kimgunmo-17.jpg'),
-    },
+  //   {
+  //     mimeType: 'image/jpeg',
+  //     name: 'album-kimgunmo-17.jpg',
+  //     body: base64_encode('/Users/gangseong-il/Downloads/album-kimgunmo-17.jpg'),
+  //   },
   ]
 }
 

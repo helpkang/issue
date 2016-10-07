@@ -32,7 +32,7 @@ GoogleAuth(config.SCOPES, config.CLIENT_SECRET, config.OAUTH_OTKEN_PATH).then((a
   //   return [options, sheetHandle.getData(options)]
   // })
   .spread((auth, sheetInfo) => {
-    return [{ auth, sheetInfo, spreadsheetId: sheetInfo.spreadsheetId }, null]
+    return [{ auth, sheetInfo, spreadsheetId: sheetInfo.spreadsheetId, parents:sheetInfo.parents }, null]
   })
   .spread((options) => {
     httpDemon(options)
@@ -93,6 +93,7 @@ const fileSave = (options, params) => {
   const fileMetadata = {
     name,
     mimeType,
+    parents: options.parents
   };
   const media = {
     name,
@@ -126,6 +127,7 @@ const appendSheet = (options, reqObj, files) => {
 
   const {
     title,
+    contents,
     screenId,
     screenName,
     name,
@@ -153,6 +155,7 @@ const appendSheet = (options, reqObj, files) => {
       {
         "values": [
           title,
+          contents,
           screenId,
           screenName,
           name,

@@ -43,8 +43,12 @@ GoogleAuth(config.SCOPES, config.CLIENT_SECRET, config.OAUTH_OTKEN_PATH).then((a
 
 function httpDemon(options) {
 
-
   http.createServer(function (req, res) {
+    console.log(req.url)
+    if(req.url !=='/uploadIssue'){
+      res.end('error')
+      return
+    }
     let jsonData = "";
 
     req.on('data', function (chunk) {
@@ -56,7 +60,7 @@ function httpDemon(options) {
         processRequest(options, req, res, jsonData)
       } catch (e) {
         console.error(e)
-         res.end(JSON.stringify({ success: false }))
+        res.end(JSON.stringify({ success: false }))
       }
     });
   }).listen(8080);

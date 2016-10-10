@@ -32,7 +32,7 @@ GoogleAuth(config.SCOPES, config.CLIENT_SECRET, config.OAUTH_OTKEN_PATH).then((a
   //   return [options, sheetHandle.getData(options)]
   // })
   .spread((auth, sheetInfo) => {
-    return [{ auth, sheetInfo, spreadsheetId: sheetInfo.spreadsheetId, parents:sheetInfo.parents }, null]
+    return [{ auth, sheetInfo, spreadsheetId: sheetInfo.spreadsheetId, parents: sheetInfo.parents }, null]
   })
   .spread((options) => {
     httpDemon(options)
@@ -52,7 +52,12 @@ function httpDemon(options) {
     });
 
     req.on('end', function () {
-      processRequest(options, req, res, jsonData)
+      try {
+        processRequest(options, req, res, jsonData)
+      } catch (e) {
+        console.error(e)
+         res.end(JSON.stringify({ success: false }))
+      }
     });
   }).listen(8080);
 
@@ -138,16 +143,16 @@ const appendSheet = (options, reqObj, files) => {
     deviceInfo,
   } = reqObj
 
-  const fileIds = files.map((file, idx)=>{
+  const fileIds = files.map((file, idx) => {
     return `=HYPERLINK("https://drive.google.com/file/d/${file.id}", "imageLink ${++idx}")`
   })
 
-  let fileFirstValue = (fileIds.length>0) ? fileIds[0]: ''
-   
-   let fileSubValue = []
-   if(fileFirstValue){
-     fileSubValue = fileIds.slice(1)
-   }  
+  let fileFirstValue = (fileIds.length > 0) ? fileIds[0] : ''
+
+  let fileSubValue = []
+  if (fileFirstValue) {
+    fileSubValue = fileIds.slice(1)
+  }
 
   sheetHandle.appendData(
     options,

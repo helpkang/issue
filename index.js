@@ -35,17 +35,22 @@ GoogleAuth(config.SCOPES, config.CLIENT_SECRET, config.OAUTH_OTKEN_PATH).then((a
     return [{ auth, sheetInfo, spreadsheetId: sheetInfo.spreadsheetId, parents: sheetInfo.parents }, null]
   })
   .spread((options) => {
-    httpDemon(options)
+    let port = 80
+    if (process.argv[2]) {
+      port = parseInt(process.argv[2])
+    }
 
+    httpDemon(options, port)
   })
 
 
 
-function httpDemon(options) {
+
+function httpDemon(options, port) {
 
   http.createServer(function (req, res) {
     console.log(req.url)
-    if(req.url !=='/uploadIssue'){
+    if (req.url !== '/uploadIssue') {
       res.end('error')
       return
     }
@@ -63,7 +68,7 @@ function httpDemon(options) {
         res.end(JSON.stringify({ success: false }))
       }
     });
-  }).listen(8080);
+  }).listen(port);
 
 }
 
